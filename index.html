@@ -252,163 +252,88 @@ let startTime = null;
 let timerInterval = null;
 let order = [];
 
-
 /* Otaqları yarat */
-
 function renderRooms(){
-
     let html = "";
-
     rooms.forEach((room,index)=>{
-
         html += `
-            <div class="room"
-                 id="room-${index}"
-                 onclick="selectRoom(${index})">
-
+            <div class="room" id="room-${index}" onclick="selectRoom(${index})">
                 <div class="room-icon">${room.icon}</div>
                 <div class="room-name">${room.name}</div>
-
             </div>
         `;
     });
-
     document.getElementById("rooms").innerHTML = html;
 }
 
-
 /* Otaq seç */
-
 function selectRoom(index){
-
     selectedRoom = rooms[index];
 
-    document.querySelectorAll(".room")
-        .forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".room").forEach(x => x.classList.remove("active"));
+    document.getElementById("room-"+index).classList.add("active");
 
-    document.getElementById("room-"+index)
-        .classList.add("active");
-
-    document.getElementById("controlPanel")
-        .classList.remove("hidden");
-
-    document.getElementById("selectedRoom")
-        .innerText = selectedRoom.icon + " " + selectedRoom.name;
-
+    document.getElementById("controlPanel").classList.remove("hidden");
+    document.getElementById("selectedRoom").innerText = selectedRoom.icon + " " + selectedRoom.name;
 }
 
-
 /* Yeməkləri göstər */
-
 function renderFoods(){
-
     let html = "";
-
     foods.forEach((food,index)=>{
-
         html += `
             <div class="food">
-
                 <strong>${food.name}</strong>
-
-                <div style="margin-top:6px">
-                    ${food.price.toFixed(2)} AZN
-                </div>
-
-                <button onclick="addFood(${index})">
-                    + Sifariş et
-                </button>
-
+                <div style="margin-top:6px">${food.price.toFixed(2)} AZN</div>
+                <button onclick="addFood(${index})">+ Sifariş et</button>
             </div>
         `;
     });
-
     document.getElementById("foodGrid").innerHTML = html;
 }
 
-
 /* Vaxtı başlat */
-
 function startTimer(){
-
     if(!selectedRoom){
-
         alert("Əvvəlcə otaq seçin.");
-
         return;
     }
-
     if(startTime){
-
         alert("Vaxt artıq başlayıb.");
-
         return;
     }
 
     startTime = Date.now();
-
-    document.getElementById("status")
-        .innerText = "🟢 Vaxt aktivdir";
-
+    document.getElementById("status").innerText = "🟢 Vaxt aktivdir";
     timerInterval = setInterval(updateTimer,1000);
-
     updateTimer();
 }
 
-
 /* Vaxt hesabı */
-
 function calculateRoomPrice(){
-
     if(!startTime) return 0;
-
     const elapsed = Date.now() - startTime;
-
     const hour = 60 * 60 * 1000;
     const grace = 15 * 60 * 1000;
 
-    /*
-       0 - 1 saat 15 dəqiqə = 4 AZN
-
-       1 saat 15 dəqiqədən sonra = 7 AZN
-
-       2 saat 15 dəqiqədən sonra = 10 AZN
-
-       və s.
-    */
-
     if(elapsed <= hour + grace){
-
         return 4;
     }
-
-    const extraHours =
-        Math.ceil((elapsed - hour - grace) / hour);
-
+    const extraHours = Math.ceil((elapsed - hour - grace) / hour);
     return 4 + extraHours * 3;
 }
 
-
 /* Timer */
-
 function updateTimer(){
-
     if(!startTime) return;
-
     const elapsed = Date.now() - startTime;
-
     let seconds = Math.floor(elapsed / 1000);
-
     let hours = Math.floor(seconds / 3600);
-
     seconds %= 3600;
-
     let minutes = Math.floor(seconds / 60);
-
     seconds %= 60;
 
-    document.getElementById("timer")
-        .innerText =
+    document.getElementById("timer").innerText =
         String(hours).padStart(2,"0") + ":" +
         String(minutes).padStart(2,"0") + ":" +
         String(seconds).padStart(2,"0");
@@ -416,116 +341,64 @@ function updateTimer(){
     updateTotal();
 }
 
-
 /* Yemək əlavə et */
-
 function addFood(index){
-
     const food = foods[index];
-
     order.push(food);
-
     renderOrder();
-
     updateTotal();
 }
 
-
 /* Sifarişi göstər */
-
 function renderOrder(){
-
     const box = document.getElementById("orderList");
-
     if(order.length === 0){
-
         box.innerHTML = "Sifariş yoxdur.";
-
         return;
     }
 
     let html = "";
-
     order.forEach((item,index)=>{
-
         html += `
             <div class="order">
-
-                ${item.name}
-                —
-                ${item.price.toFixed(2)} AZN
-
-                <button
-                    onclick="removeFood(${index})"
-                    style="float:right;background:#d9534f;color:white;padding:5px 9px">
-
-                    ✕
-
-                </button>
-
+                ${item.name} — ${item.price.toFixed(2)} AZN
+                <button onclick="removeFood(${index})" style="float:right;background:#d9534f;color:white;padding:5px 9px">✕</button>
             </div>
         `;
     });
-
     box.innerHTML = html;
 }
 
-
 /* Yeməyi sil */
-
 function removeFood(index){
-
     order.splice(index,1);
-
     renderOrder();
-
     updateTotal();
 }
 
-
 /* Yemək toplamı */
-
 function calculateFoodPrice(){
-
-    return order.reduce(
-        (total,item)=>total + item.price,
-        0
-    );
+    return order.reduce((total,item)=>total + item.price, 0);
 }
-
 
 /* Ümumi hesab */
-
 function updateTotal(){
-
     const roomPrice = calculateRoomPrice();
-
     const foodPrice = calculateFoodPrice();
 
-    document.getElementById("roomPrice")
-        .innerText = roomPrice.toFixed(2);
-
-    document.getElementById("foodPrice")
-        .innerText = foodPrice.toFixed(2);
-
-    document.getElementById("totalPrice")
-        .innerText = (roomPrice + foodPrice).toFixed(2);
+    document.getElementById("roomPrice").innerText = roomPrice.toFixed(2);
+    document.getElementById("foodPrice").innerText = foodPrice.toFixed(2);
+    document.getElementById("totalPrice").innerText = (roomPrice + foodPrice).toFixed(2);
 }
 
-
 /* Hesabı bağla */
-
 function finishRoom(){
-
     if(!startTime){
-
         alert("Vaxt hələ başlamayıb.");
-
         return;
     }
 
     updateTotal();
-
     const roomPrice = calculateRoomPrice();
     const foodPrice = calculateFoodPrice();
     const total = roomPrice + foodPrice;
@@ -545,19 +418,14 @@ function finishRoom(){
     timerInterval = null;
     order = [];
 
-    document.getElementById("timer")
-        .innerText = "00:00:00";
-
-    document.getElementById("status")
-        .innerText = "Vaxt bitdi";
+    document.getElementById("timer").innerText = "00:00:00";
+    document.getElementById("status").innerText = "Vaxt bitdi";
 
     renderOrder();
     updateTotal();
 }
 
-
 /* Başlanğıc */
-
 renderRooms();
 renderFoods();
 
