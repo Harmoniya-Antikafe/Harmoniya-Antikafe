@@ -44,7 +44,7 @@ h2{
 
 .rooms{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
     gap:15px;
 }
 
@@ -52,11 +52,10 @@ h2{
     background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.12);
     border-radius:18px;
-    padding:20px;
+    padding:22px;
     text-align:center;
     cursor:pointer;
     transition:.2s;
-    position: relative;
 }
 
 .room:hover{
@@ -70,26 +69,18 @@ h2{
 }
 
 .room-icon{
-    font-size:35px;
+    font-size:40px;
 }
 
 .room-name{
-    margin-top:10px;
-    font-size:17px;
+    margin-top:12px;
+    font-size:18px;
     font-weight:bold;
 }
 
-.room-timer-small{
-    font-family: monospace;
-    font-size: 16px;
-    color: #f5d28a;
-    margin-top: 6px;
-    font-weight: bold;
-}
-
 .room-badge{
-    margin-top:6px;
-    font-size:12px;
+    margin-top:8px;
+    font-size:13px;
     color:#bde7bd;
 }
 
@@ -124,11 +115,6 @@ button{
 
 .start{
     background:#49b675;
-    color:white;
-}
-
-.pause{
-    background:#f0ad4e;
     color:white;
 }
 
@@ -212,7 +198,7 @@ button{
 
 <header>
     <div class="logo">✦ HARMONİYA ANTİKAFE ✦</div>
-    <div class="subtitle">Your time • Your room • Your harmony</div>
+    <div class="subtitle">Sənin vaxtın • Sənin otağın • Sənin Əyləncən</div>
 </header>
 
 <div class="container">
@@ -224,10 +210,7 @@ button{
     <div class="panel hidden" id="controlPanel">
 
         <h2 id="selectedRoom">Otaq</h2>
-        <div style="text-align:center; margin-bottom:15px;">
-            <span id="roomPeopleInfo" style="color:#f5d28a; font-weight:bold; margin-right:15px;"></span>
-            <button onclick="changePeople()" style="background:#5bc0de; color:white; padding:6px 12px; font-size:13px;">👥 Adam sayını dəyiş</button>
-        </div>
+        <div id="roomPeopleInfo" style="text-align:center; color:#f5d28a; margin-bottom:10px;"></div>
 
         <div class="status" id="status">
             Vaxt hələ başlamayıb
@@ -237,8 +220,8 @@ button{
             00:00:00
         </div>
 
-        <div style="text-align:center; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <button class="start" id="startBtn" onclick="toggleTimer()">
+        <div style="text-align:center">
+            <button class="start" onclick="startTimer()">
                 ▶ Vaxtı başlat
             </button>
 
@@ -249,16 +232,14 @@ button{
 
         <p class="info">
             <b>Hesablama qaydası:</b><br>
-            1-ci saat: Adam sayı × 4 AZN | Növbəti hər saat: Adam sayı × 3 AZN<br>
+            1-ci saat: Adam sayı × 4 AZN<br>
+            Növbəti hər saat: Adam sayı × 3 AZN<br>
             Hər saat bitdikdən sonra <b>15 dəqiqə güzəşt</b> verilir (16-cı dəqiqədən növbəti saat yazılır).
         </p>
 
         <hr style="border-color:#ffffff18;margin:25px 0">
 
-        <h2>🍔 Yemək və içkilər</h2>
-
-        <div id="foodGrid" class="food-grid"></div>
-
+        <!-- SİFARİŞ BÖLGƏSİ MENYUDAN ƏVVƏLƏ GƏTİRİLDİ -->
         <h2>🧾 Sifariş</h2>
 
         <div id="orderList">
@@ -270,6 +251,12 @@ button{
             Yemək: <span id="foodPrice">0.00</span> AZN<br>
             Ümumi: <span id="totalPrice">0.00</span> AZN
         </div>
+
+        <hr style="border-color:#ffffff18;margin:25px 0">
+
+        <h2>🍔 Yemək və içkilər</h2>
+
+        <div id="foodGrid" class="food-grid"></div>
 
     </div>
 
@@ -293,6 +280,7 @@ roomsData.forEach(r => {
         name: r.name,
         icon: r.icon,
         timer: 0,
+        interval: null,
         isRunning: false,
         people: 0,
         items: []
@@ -300,26 +288,6 @@ roomsData.forEach(r => {
 });
 
 let currentRoomName = null;
-
-// Ümumi mərkəzi dövr (Global Timer) - bütün otaqların vaxtını eyni anda arxa fonda idarə edir
-setInterval(() => {
-    for (let key in rooms) {
-        if (rooms[key].isRunning) {
-            rooms[key].timer++;
-        }
-    }
-    renderRooms(); // Kartlardakı kiçik taymerləri yenilə
-    if (currentRoomName) {
-        updateDisplay(); // Açıq olan otağın paneldəki qiymət və vaxtını yenilə
-    }
-}, 1000);
-
-function formatTime(totalSeconds) {
-    let hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-    let mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-    let secs = String(totalSeconds % 60).padStart(2, '0');
-    return `${hrs}:${mins}:${secs}`;
-}
 
 function renderRooms() {
     const container = document.getElementById("rooms");
@@ -331,17 +299,11 @@ function renderRooms() {
         div.className = "room" + (currentRoomName === r.name ? " active" : "");
         div.onclick = () => selectRoom(r.name);
         
-        let badgeText = "Boşdur";
-        if (room.isRunning) {
-            badgeText = `İşləyir (${room.people} nəfər)`;
-        } else if (room.timer > 0) {
-            badgeText = `Dayanıb (${room.people} nəfər)`;
-        }
+        let badgeText = room.isRunning ? `Aktiv: ${room.people} nəfər` : (room.people > 0 ? `Dayanıب (${room.people} nəfər)` : "Boşdur");
         
         div.innerHTML = `
             <div class="room-icon">${r.icon}</div>
             <div class="room-name">${r.name}</div>
-            <div class="room-timer-small">${formatTime(room.timer)}</div>
             <div class="room-badge">${badgeText}</div>
         `;
         container.appendChild(div);
@@ -352,12 +314,10 @@ function selectRoom(name) {
     currentRoomName = name;
     let room = rooms[name];
 
-    if (room.people === 0) {
+    if (room.people === 0 && !room.isRunning) {
         let pCount = prompt(name + " üçün adam sayını daxil edin:", "4");
         if (pCount === null || isNaN(pCount) || parseInt(pCount) <= 0) {
             currentRoomName = null;
-            document.getElementById("controlPanel").classList.add("hidden");
-            renderRooms();
             return;
         }
         room.people = parseInt(pCount);
@@ -367,56 +327,25 @@ function selectRoom(name) {
     document.getElementById("selectedRoom").innerHTML = `${room.icon} ${name}`;
     document.getElementById("roomPeopleInfo").innerText = `Otaqdakı adam sayı: ${room.people} nəfər`;
     
-    updatePanelState();
-    renderRooms();
-}
-
-function changePeople() {
-    if (!currentRoomName) return;
-    let room = rooms[currentRoomName];
-    let pCount = prompt("Yeni adam sayını daxil edin:", room.people);
-    if (pCount !== null && !isNaN(pCount) && parseInt(pCount) > 0) {
-        room.people = parseInt(pCount);
-        document.getElementById("roomPeopleInfo").innerText = `Otaqdakı adam sayı: ${room.people} nəfər`;
-        updateDisplay();
-        renderRooms();
-    }
-}
-
-function toggleTimer() {
-    if (!currentRoomName) return;
-    let room = rooms[currentRoomName];
-
-    room.isRunning = !room.isRunning;
-    updatePanelState();
-    renderRooms();
-}
-
-function updatePanelState() {
-    if (!currentRoomName) return;
-    let room = rooms[currentRoomName];
-    let startBtn = document.getElementById("startBtn");
-    let statusDiv = document.getElementById("status");
-
-    if (room.isRunning) {
-        startBtn.innerText = "⏸ Fasilə ver";
-        startBtn.className = "pause";
-        statusDiv.innerText = "Vaxt gedir...";
-    } else {
-        if (room.timer > 0) {
-            startBtn.innerText = "▶ Davam et";
-            statusDiv.innerText = "Vaxt dayandırılıb";
-        } else {
-            startBtn.innerText = "▶ Vaxtı başlat";
-            statusDiv.innerText = "Vaxt hələ başlamayıb";
-        }
-        startBtn.className = "start";
-    }
     updateDisplay();
+    renderRooms();
+}
+
+function startTimer() {
+    let room = rooms[currentRoomName];
+    if (!room.isRunning) {
+        room.isRunning = true;
+        room.interval = setInterval(() => {
+            room.timer++;
+            updateDisplay();
+        }, 1000);
+    }
+    document.getElementById("status").innerText = "Vaxt gedir...";
+    renderRooms();
 }
 
 function calculateRoomPrice(seconds, people) {
-    if (seconds <= 0 || people <= 0) return 0;
+    if (seconds <= 0) return 0;
     
     let totalMinutes = seconds / 60;
     let hours = 0;
@@ -442,7 +371,10 @@ function updateDisplay() {
     if (!currentRoomName) return;
     let room = rooms[currentRoomName];
 
-    document.getElementById("timer").innerText = formatTime(room.timer);
+    let hrs = String(Math.floor(room.timer / 3600)).padStart(2, '0');
+    let mins = String(Math.floor((room.timer % 3600) / 60)).padStart(2, '0');
+    let secs = String(room.timer % 60).padStart(2, '0');
+    document.getElementById("timer").innerText = `${hrs}:${mins}:${secs}`;
 
     let roomCost = calculateRoomPrice(room.timer, room.people);
     document.getElementById("roomPrice").innerText = roomCost.toFixed(2);
@@ -469,20 +401,20 @@ function updateDisplay() {
 }
 
 function finishRoom() {
-    if (!currentRoomName) return;
     let room = rooms[currentRoomName];
+    if (room.interval) clearInterval(room.interval);
     
     let roomCost = calculateRoomPrice(room.timer, room.people);
     let foodCost = room.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
     let total = roomCost + foodCost;
 
-    alert(`${currentRoomName} bağlandı.\nÜmumi məbləğ: ${total.toFixed(2)} AZN`);
+    alert(`Otaq bağlandı: ${currentRoomName}\nÜmumi məbləğ: ${total.toFixed(2)} AZN`);
 
-    // Otağı sıfırla
     room.timer = 0;
     room.isRunning = false;
     room.people = 0;
     room.items = [];
+    if (room.interval) clearInterval(room.interval);
 
     document.getElementById("controlPanel").classList.add("hidden");
     currentRoomName = null;
@@ -491,14 +423,14 @@ function finishRoom() {
 
 const menu = {
   "Səhər yeməkləri": [
-    { name: "Səhər Yeməyi Seti", price: 10.00, image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400" },
+    { name: "Səhər Yeməyi Seti", price: 10.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0XBIYXqKhyXSOmKZOPahzqYMadCigo9UEpKyKMkx6MA&s=10" },
     { name: "Qlazok", price: 2.50, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400" },
-    { name: "Qayğanaq", price: 2.50, image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400" },
-    { name: "Pomidor yumurta", price: 3.50, image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400" }
+    { name: "Qayğanaq", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-zC5lESt_7nxq_lJLIOGU6u533efaiPUs6sZHcnHFEA&s=10" },
+    { name: "Pomidor yumurta", price: 3.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPqAJnNdtA-qbDEzg1tAAYGzf7Ssqd8OJlV4YbUk5yw&s=10" }
   ],
   "Sərin içkilər": [
-    { name: "Cola / Fanta 0.5L", price: 1.80, image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" },
-    { name: "Ayran", price: 0.80, image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=400" }
+    { name: "Cola / Fanta 0.5L", price: 1.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvCQpUqyQtSfBXgtO0iYtpqx3L6mm3UbVWOhPDsiR_pQ&s=10" },
+    { name: "Ayran", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSfbty5xvznIviajLIyAJcbG9nOR_72msZofGkIxUu7g&s=10" }
   ]
 };
 
