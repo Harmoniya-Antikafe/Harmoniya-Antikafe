@@ -127,6 +127,19 @@ button{
     background:#21192c;
     padding:15px;
     border-radius:14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.food img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #111;
 }
 
 .food button{
@@ -134,15 +147,20 @@ button{
     color:#241b29;
     width:100%;
     margin-top:10px;
+    padding: 8px;
+    font-size: 13px;
 }
 
 .order{
     border-bottom:1px solid rgba(255,255,255,.1);
     padding:10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .total{
-    font-size:25px;
+    font-size:22px;
     color:#f5d28a;
     text-align:right;
     margin-top:20px;
@@ -156,6 +174,15 @@ button{
     text-align:center;
     color:#ccc;
     margin-top:10px;
+}
+
+.category-title {
+    margin: 30px 0 15px 0;
+    color: #f5d28a;
+    font-size: 22px;
+    border-bottom: 2px solid rgba(245,210,138,0.3);
+    padding-bottom: 8px;
+    grid-column: 1 / -1;
 }
 </style>
 </head>
@@ -205,7 +232,7 @@ button{
 
         <h2>🍔 Yemək və içkilər</h2>
 
-        <div class="food-grid" id="foodGrid"></div>
+        <div id="foodGrid" class="food-grid"></div>
 
         <h2>🧾 Sifariş</h2>
 
@@ -224,7 +251,6 @@ button{
 </div>
 
 <script>
-
 const rooms = [
     {name:"Game Room", icon:"🎮"},
     {name:"Cinema Room", icon:"🎬"},
@@ -247,7 +273,6 @@ const menu = {
     { name: "Sosiska yumurta", price: 4.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGvUx8jIPu7g3Z1qTzKd0nAu7wpBDS74JavIXvXr5WiQ&s" },
     { name: "Tərəvəzli omlet", price: 3.50, image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400" }
   ],
-
   "Salatlar": [
     { name: "Pomidor, xiyar", price: 3.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3qLAlHjKXY5us300WkuN8W35Y9hVzA-BpbPmhi5UyYg&s=10" },
     { name: "Pendir", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaXJNQVdmz_0kjS5QC0OVqKTBkx4YfSPu6Kg-JQ6_yfA&s=10" },
@@ -272,7 +297,6 @@ const menu = {
     { name: "Manqal salatı", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFK4OluqjIMialFBjD45mu6A7vA4CELXlOgFMnL1uJVA&s=10" },
     { name: "Rəngli bibər salatı", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX-XzSQF_GOaTvwsyYmxxFqo_z366zV_51qEKCrFK27w&s=10" }
   ],
-
   "İsti yeməklər": [
     { name: "Lavanda özəl yemək", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOPgh4JrnP0TChDwmn5Tf9YQ5aR-n7ssoRhjdLpWMKvQ&s=10" },
     { name: "Piti", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcQUlaS6o5uH_vnwxZzxf9KpZ31m1Ubdl4Zh0QXxyuew&s=10" },
@@ -299,7 +323,6 @@ const menu = {
     { name: "Sac quzu", price: 30.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuDYbhmNy2Kv_zGfAB476F0R5qgIe61QpbopvuLSieMw&s=10" },
     { name: "Sac qarışıq", price: 36.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP4LYy1AjV1Ct4pC3sq0_quVeEA0M8y9zQy9CIGA7Xkw&s=10" }
   ],
-
   "Şorbalar": [
     { name: "Girs", price: 3.00, image: "https://avatars.mds.yandex.net/get-sprav-products/5632604/2a00000180eaac14a8b9c21ba93f71191096/XXL" },
     { name: "Düşbərə", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB0WOecRQK166bs_Bkp-liw7pvGl0VWWhRNzwdCAN3lQ&s=10" },
@@ -308,20 +331,17 @@ const menu = {
     { name: "Göbələk şorbası", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTI9tGTvHRiWj7GiekqrFXZPJVZ1DaMqPpQWrDltOYPLg&s=10" },
     { name: "Pomidor şorbası", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhFDx4TghD_jXnc5T1mAs2qq5xwYfb3h-eIqvmSr6Haw&s=10" }
   ],
-
   "Qarnirlər": [
     { name: "Düyü", price: 4.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7G8Up0ivaeGCIKEcpzHdx9gKf6_3GQH6EyqLhQP8ChQ&s=10" },
     { name: "Kartof pürə", price: 4.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvekGMdvVOn0_EEfGfmUukWXyN7dJiZVJJK6AQn2ifjg&s=10" },
     { name: "Ev sayağı kartof", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHraGMjntMW6Qtm-wkGOa2YIp_tVVhczqI4VD_GBtsAA&s=10" }
   ],
-
   "Balıq Yeməkləri": [
     { name: "Belamur", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUi96ebC8vhDLHtK35wOHv8IX6JzEdaxt2IncdJlmj0A&s=10" },
     { name: "Sazan", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9rBhs-r9dP6peNlvX48SkNNHoEbnTOyO9a8R--aE_pw&s=10" },
     { name: "Sudak", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9R5PrzQ7snXofmHm9s2QTmlVwstRc5jG3m1svXPLrPw&s=10" },
     { name: "Farel", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS75w6LMtL8Vxd3NfqMKdQw1ocq-9yd725bb5VfzqutAg&s=10" }
   ],
-
   "Kabablar": [
     { name: "Lülə kabab", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReCKF5Q_Dg5RS82UXYNNkNwY5PoB9bMKFvjuYwlTHPgg&s=10" },
     { name: "Tikə kabab", price: 7.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtL3d_f1YqJ_5sfp6HGLgzgn_WxhUTeMNYNbZlnNvHUg&s=10" },
@@ -346,7 +366,6 @@ const menu = {
     { name: "Toyuq lüləsi", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmTj4JjCbnKVry94sL8sacwxVVpg0xV3RMo0eyUgNbuw&s=10" },
     { name: "Semiçka kababı", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTZWalzGa-A5l7qK7jG_EMQQzTINDf3E7dGYwqxqe-Hg&s=10" }
   ],
-
   "Fast food": [
     { name: "Burger + fri", price: 6.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnyF_fUyleMLP8_lhafas2uNDMxiDaqciepHHtnnJTzQ&s=10" },
     { name: "Chicken burger + fri", price: 6.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSCqXKo_hD5HTsai3KNzesC7ECmZK82qzeM0RL5F2sQA&s=10" },
@@ -365,7 +384,6 @@ const menu = {
     { name: "Nuggets + fri", price: 4.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPM4OTIea4QQkJykveUIQiTIk-eAvqgNRAH6UybbovDg&s=10" },
     { name: "Soğan halqası + fri", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiGq6LJBl3eo4omO2qMks3go_I3qLo3WVal54CMaQ2HA&s=10" }
   ],
-
   "Xəmir yeməkləri": [
     { name: "Ət Qutabı", price: 1.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp6nbrGGQRIRWLfUkwhVMM7vicnAxuWlntneEbSZkiJw&s" },
     { name: "Göy Qutabı", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR25yWJvneBWNYNJ6iMXByz2m8ykCtDbu1qx8qqfsShAA&s=10" },
@@ -374,7 +392,6 @@ const menu = {
     { name: "Gürcü Xəngəli (1 ədəd)", price: 1.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB6Br0IFW-NL9JgzrDp2iaY0gPCoW6AQG12nf37wMXTQ&s=10" },
     { name: "Düşbərə", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8OsRPeE_8gVxoqLWDWqeyoU9OFXMfFY9jC_6yUKwsCg&s=10" }
   ],
-
   "Pizzalar": [
     { name: "Lavanda Pizza", price: 18.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZmVqOCUEVn1KMYf3UJqAewIFBu9It6kTAtibIn5W8ew&s=10" },
     { name: "Lavanda Pizza Kənarı Pendirli", price: 20.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiDgCfk15nySstPd4dngHDYQ8qVpC1Vz9JUKv41ATh3Q&s=10" },
@@ -387,7 +404,6 @@ const menu = {
     { name: "Qıymalı pizza", price: 15.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOFv99Y6ds2ow_UEB3CBTvIFr74xk2l-rtIq7LqMLPrg&s=10" },
     { name: "Qarışıq pizza", price: 17.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyPlOmpCU88CvwQgr5h6pJ9rc2C4rcDI_A8evdrx-h1g&s=10" }
   ],
-
   "Pide və Lahmacun": [
     { name: "Lahmacun pendirli", price: 3.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIgPLxvItrvllvEwQ3xt3kSEiV3nBtTP3Zr6wJRTtcVw&s=10" },
     { name: "Lahmacun sadə", price: 2.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMVBK7jp4XhdATwR9hP7MHCUNNdb3EcCmlSgan1_cLVw&s=10" },
@@ -398,7 +414,6 @@ const menu = {
     { name: "Pide qıymalı", price: 6.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6yk1DBC97Kk9aLggoFp6E8L9Z9b3ybgq3q_RXdxQZ2Q&s=10" },
     { name: "Pide quşbaşı", price: 6.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeQZhI4MGAK4RQflKq4BeAcGJ-q9w4G7yVtweSxql5YQ&s=10" }
   ],
-
   "Dönərlər": [
     { name: "Toyuqlu Şaurma Lavaşda", price: 3.20, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH8x44kzbnnlFEZsJDYoLupSq3WkvoiGqKOPS87fMAzQ&s=10" },
     { name: "Toyuqlu İskəndər Dönəri", price: 6.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOk4T9lEN2qKw-Wg-edqu_Htfge54gjrW-1UAmLWba7UapGvipQvuyW8HI&s=10" },
@@ -415,7 +430,6 @@ const menu = {
     { name: "Ət Basdırma Dönər Çörəkdə", price: 4.00, image: "https://imageproxy.wolt.com/assets/6a6a2300383847bab3f35180?w=960" },
     { name: "Ət İskəndər Dönəri", price: 8.00, image: "https://imageproxy.wolt.com/assets/6a6a24b0383847bab3f3542a?w=960" }
   ],
-
   "Sərin içkilər": [
     { name: "Fanta, Coca cola, Sprite, Pepsi Stəkan", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTH7IWq55nurEydrBpBHHXq5s7JhvdCy0LGrWUSbl4qoA&s=10" },
     { name: "Fanta, Coca cola, Sprite, Pepsi 0.3L", price: 1.20, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIDF4BimqAay-Er8BSsklSLyb0HS-HgltUWGHQM9j9XA&s=10" },
@@ -432,7 +446,6 @@ const menu = {
     { name: "Ayran Evsayağı Paket", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSfbty5xvznIviajLIyAJcbG9nOR_72msZofGkIxUu7g&s=10" },
     { name: "Ayran Stakan Paket", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB0FsEqEt5S1cNoDlBGLQ27fBh8jyuoDDchJS-qLoPcA&s=10" }
   ],
-
   "Kokteyllər": [
     { name: "İce Coffee", price: 3.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAptwpeBEzVgPTUrxhxA5rtixV71XBrQ8IIm1VCKf0Rw&s=10" },
     { name: "Milkshakes Çiyələk", price: 4.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdAVhmSgrGh62oaWqGhkWD90fDcKtyVNw6WIVzI59c1Q&s=10" },
@@ -445,7 +458,6 @@ const menu = {
     { name: "Milkshakes Şokolad", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_vmksl24xcqiYptZtj_V7E6rvzC6ugw-3tbmqAwsv7A&s=10" },
     { name: "Moxito", price: 4.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyGGQhBLtLzLzp4BYu8EhwBA7a-6RTSflvHt0-oFoo6A&s=10" }
   ],
-
   "Çay süfrəsi": [
     { name: "Çay stəkan", price: 0.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBLVFFXCu3T8rooYeObKlumhozrHCogc15zt-i1xHzTg&s=10" },
     { name: "Çay çaynik", price: 2.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4POMWVyrqWbMgOgrWUmbMKpAGicvrfd4A833fqm4Ctw&s=10" },
@@ -453,7 +465,6 @@ const menu = {
     { name: "Çay mürəbbə", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRcoJ-up29tcwFKcKby4kaD-Ja8ptJp8cf-ImY-EWqvg&s=10" },
     { name: "Çay dəstgahı", price: 6.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVEntOMKQP9uxXHOcnL7tTfl0DUBfhzBkWgjbBxJ6PVg&s=10" }
   ],
-
   "Desertlər": [
     { name: "Şəki halvası", price: 5.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjASxutUNskbHFxOqIznqvyJ6JVbW7RkYlg__f6V2k2g&s=10" },
     { name: "Bamiyə", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAqMfyW-kMrzLVWlcRRC_0GNJyEynfTMbWOPBimpnsyQ&s=10" },
@@ -463,198 +474,151 @@ const menu = {
     { name: "Paxlava", price: 1.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAkmN-r3cgRKu2K_PXczMw5Bg3hBO8fpFpAmA8VwXPKA&s=10" },
     { name: "Türk paxlavası", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjB3Eij1ci0UzHs1zb3g7UUoqM0h9BMZLs3q39VrSuug&s=10" }
   ],
-
   "Kofelər": [
     { name: "Kofe sadə", price: 2.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAbD7JmkOvYTp1_vM3iBNnpU5F2LKuMMklnlyhGPMilQ&s" },
     { name: "Südlü kofe", price: 3.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlAwgclU1uA8Xdqvk051EMVtxfV8Uym35zASn-tUiYtg&s=10" },
     { name: "Cappucino", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhUBR-RbnEOQ7VLvC9NPIz41hSFIwLKu1hEgMkWvgnHQ&s=10" },
     { name: "Latte", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxfeO5PGsjdYj8S42wcMWJTF3baXyifxppp5mZHMEJpA&s=10" },
-    { name: "İsti şokolad", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr7IP14AEB_raD0UiBKtFiNuYHQ_FLXjWy-dfEUL2VXw&s=10" },
-]
+    { name: "İsti şokolad", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr7IP14AEB_raD0UiBKtFiNuYHQ_FLXjWy-dfEUL2VXw&s=10" }
+  ]
 };
 
-let selectedRoom = null;
-let startTime = null;
+let selectedRoomName = "";
 let timerInterval = null;
-let order = [];
+let secondsElapsed = 0;
+let isRunning = false;
+let orders = [];
 
-/* Otaqları yarat */
-function renderRooms(){
-    let html = "";
-    rooms.forEach((room,index)=>{
-        html += `
-            <div class="room" id="room-${index}" onclick="selectRoom(${index})">
-                <div class="room-icon">${room.icon}</div>
-                <div class="room-name">${room.name}</div>
-            </div>
-        `;
-    });
-    document.getElementById("rooms").innerHTML = html;
-}
+// Otaqları yaratmaq
+const roomsContainer = document.getElementById("rooms");
+rooms.forEach(room => {
+    const div = document.createElement("div");
+    div.className = "room";
+    div.innerHTML = `<div class="room-icon">${room.icon}</div><div class="room-name">${room.name}</div>`;
+    div.onclick = (e) => selectRoom(room.name, e);
+    roomsContainer.appendChild(div);
+});
 
-/* Otaq seç */
-function selectRoom(index){
-    selectedRoom = rooms[index];
-
-    document.querySelectorAll(".room").forEach(x => x.classList.remove("active"));
-    document.getElementById("room-"+index).classList.add("active");
-
+function selectRoom(name, event) {
+    selectedRoomName = name;
+    document.getElementById("selectedRoom").innerText = name;
     document.getElementById("controlPanel").classList.remove("hidden");
-    document.getElementById("selectedRoom").innerText = selectedRoom.icon + " " + selectedRoom.name;
+    
+    document.querySelectorAll(".room").forEach(r => r.classList.remove("active"));
+    event.currentTarget.classList.add("active");
 }
 
-/* Yeməkləri göstər */
-function renderFoods(){
-    let html = "";
-    foods.forEach((food,index)=>{
-        html += `
-            <div class="food">
-                <strong>${food.name}</strong>
-                <div style="margin-top:6px">${food.price.toFixed(2)} AZN</div>
-                <button onclick="addFood(${index})">+ Sifariş et</button>
+// Menyu elementlərini kateqoriyalar üzrə yaratmaq
+const foodGrid = document.getElementById("foodGrid");
+for (let category in menu) {
+    const catTitle = document.createElement("div");
+    catTitle.className = "category-title";
+    catTitle.innerText = category;
+    foodGrid.appendChild(catTitle);
+
+    menu[category].forEach(item => {
+        const foodCard = document.createElement("div");
+        foodCard.className = "food";
+        foodCard.innerHTML = `
+            <div>
+                <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                <div><b>${item.name}</b></div>
+                <div style="color:#f5d28a; margin-top:5px;">${item.price.toFixed(2)} AZN</div>
             </div>
+            <button onclick="addToOrder('${item.name.replace(/'/g, "\\'")}', ${item.price})">Sifariş et</button>
         `;
+        foodGrid.appendChild(foodCard);
     });
-    document.getElementById("foodGrid").innerHTML = html;
 }
 
-/* Vaxtı başlat */
-function startTimer(){
-    if(!selectedRoom){
-        alert("Əvvəlcə otaq seçin.");
-        return;
+function addToOrder(name, price) {
+    const existing = orders.find(o => o.name === name);
+    if (existing) {
+        existing.count++;
+    } else {
+        orders.push({ name, price, count: 1 });
     }
-    if(startTime){
-        alert("Vaxt artıq başlayıb.");
-        return;
-    }
-
-    startTime = Date.now();
-    document.getElementById("status").innerText = "🟢 Vaxt aktivdir";
-    timerInterval = setInterval(updateTimer,1000);
-    updateTimer();
+    updateOrderUI();
 }
 
-/* Vaxt hesabı */
-function calculateRoomPrice(){
-    if(!startTime) return 0;
-    const elapsed = Date.now() - startTime;
-    const hour = 60 * 60 * 1000;
-    const grace = 15 * 60 * 1000;
-
-    if(elapsed <= hour + grace){
-        return 4;
-    }
-    const extraHours = Math.ceil((elapsed - hour - grace) / hour);
-    return 4 + extraHours * 3;
-}
-
-/* Timer */
-function updateTimer(){
-    if(!startTime) return;
-    const elapsed = Date.now() - startTime;
-    let seconds = Math.floor(elapsed / 1000);
-    let hours = Math.floor(seconds / 3600);
-    seconds %= 3600;
-    let minutes = Math.floor(seconds / 60);
-    seconds %= 60;
-
-    document.getElementById("timer").innerText =
-        String(hours).padStart(2,"0") + ":" +
-        String(minutes).padStart(2,"0") + ":" +
-        String(seconds).padStart(2,"0");
-
-    updateTotal();
-}
-
-/* Yemək əlavə et */
-function addFood(index){
-    const food = foods[index];
-    order.push(food);
-    renderOrder();
-    updateTotal();
-}
-
-/* Sifarişi göstər */
-function renderOrder(){
-    const box = document.getElementById("orderList");
-    if(order.length === 0){
-        box.innerHTML = "Sifariş yoxdur.";
+function updateOrderUI() {
+    const orderList = document.getElementById("orderList");
+    if (orders.length === 0) {
+        orderList.innerHTML = "Sifariş yoxdur.";
+        document.getElementById("foodPrice").innerText = "0.00";
+        calculateTotal();
         return;
     }
 
-    let html = "";
-    order.forEach((item,index)=>{
-        html += `
-            <div class="order">
-                ${item.name} — ${item.price.toFixed(2)} AZN
-                <button onclick="removeFood(${index})" style="float:right;background:#d9534f;color:white;padding:5px 9px">✕</button>
-            </div>
+    orderList.innerHTML = "";
+    let foodTotal = 0;
+
+    orders.forEach((ord, index) => {
+        let itemTotal = ord.price * ord.count;
+        foodTotal += itemTotal;
+        const div = document.createElement("div");
+        div.className = "order";
+        div.innerHTML = `
+            <span>${ord.name} (x${ord.count})</span>
+            <span>
+                ${itemTotal.toFixed(2)} AZN 
+                <button onclick="removeFromOrder(${index})" style="background:#d9534f; color:white; padding:4px 8px; margin-left:10px; border-radius:6px; cursor:pointer;">✕</button>
+            </span>
         `;
+        orderList.appendChild(div);
     });
-    box.innerHTML = html;
+
+    document.getElementById("foodPrice").innerText = foodTotal.toFixed(2);
+    calculateTotal();
 }
 
-/* Yeməyi sil */
-function removeFood(index){
-    order.splice(index,1);
-    renderOrder();
-    updateTotal();
+function removeFromOrder(index) {
+    orders.splice(index, 1);
+    updateOrderUI();
 }
 
-/* Yemək toplamı */
-function calculateFoodPrice(){
-    return order.reduce((total,item)=>total + item.price, 0);
+function startTimer() {
+    if (isRunning) return;
+    isRunning = true;
+    document.getElementById("status").innerText = "Vaxt gedir...";
+    
+    timerInterval = setInterval(() => {
+        secondsElapsed++;
+        let hrs = Math.floor(secondsElapsed / 3600).toString().padStart(2, '0');
+        let mins = Math.floor((secondsElapsed % 3600) / 60).toString().padStart(2, '0');
+        let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+        
+        document.getElementById("timer").innerText = `${hrs}:${mins}:${secs}`;
+        calculateRoomPrice();
+    }, 1000);
 }
 
-/* Ümumi hesab */
-function updateTotal(){
-    const roomPrice = calculateRoomPrice();
-    const foodPrice = calculateFoodPrice();
-
+function calculateRoomPrice() {
+    let hours = secondsElapsed / 3600;
+    let roomPrice = 0;
+    if (hours <= 0) {
+        roomPrice = 0;
+    } else if (hours <= 1) {
+        roomPrice = 4.00;
+    } else {
+        roomPrice = 4.00 + Math.ceil(hours - 1) * 3.00;
+    }
     document.getElementById("roomPrice").innerText = roomPrice.toFixed(2);
-    document.getElementById("foodPrice").innerText = foodPrice.toFixed(2);
-    document.getElementById("totalPrice").innerText = (roomPrice + foodPrice).toFixed(2);
+    calculateTotal();
 }
 
-/* Hesabı bağla */
-function finishRoom(){
-    if(!startTime){
-        alert("Vaxt hələ başlamayıb.");
-        return;
-    }
+function calculateTotal() {
+    let roomP = parseFloat(document.getElementById("roomPrice").innerText) || 0;
+    let foodP = parseFloat(document.getElementById("foodPrice").innerText) || 0;
+    let total = roomP + foodP;
+    document.getElementById("totalPrice").innerText = total.toFixed(2);
+}
 
-    updateTotal();
-    const roomPrice = calculateRoomPrice();
-    const foodPrice = calculateFoodPrice();
-    const total = roomPrice + foodPrice;
-
+function finishRoom() {
     clearInterval(timerInterval);
-
-    alert(
-        "Harmoniya Antikafe\n\n" +
-        selectedRoom.name + "\n\n" +
-        "Otaq: " + roomPrice.toFixed(2) + " AZN\n" +
-        "Yemək: " + foodPrice.toFixed(2) + " AZN\n" +
-        "----------------------\n" +
-        "YEKUN: " + total.toFixed(2) + " AZN"
-    );
-
-    startTime = null;
-    timerInterval = null;
-    order = [];
-
-    document.getElementById("timer").innerText = "00:00:00";
-    document.getElementById("status").innerText = "Vaxt bitdi";
-
-    renderOrder();
-    updateTotal();
+    isRunning = false;
+    document.getElementById("status").innerText = "Hesab bağlandı.";
 }
-
-/* Başlanğıc */
-renderRooms();
-renderFoods();
-
 </script>
 
 </body>
