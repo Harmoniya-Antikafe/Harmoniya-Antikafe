@@ -239,7 +239,6 @@ button{
 
         <hr style="border-color:#ffffff18;margin:25px 0">
 
-        <!-- SİFARİŞ BÖLGƏSİ MENYUDAN ƏVVƏLƏ GƏTİRİLDİ -->
         <h2>🧾 Sifariş</h2>
 
         <div id="orderList">
@@ -299,7 +298,7 @@ function renderRooms() {
         div.className = "room" + (currentRoomName === r.name ? " active" : "");
         div.onclick = () => selectRoom(r.name);
         
-        let badgeText = room.isRunning ? `Aktiv: ${room.people} nəfər` : (room.people > 0 ? `Dayanıب (${room.people} nəfər)` : "Boşdur");
+        let badgeText = room.isRunning ? `Aktiv: ${room.people} nəfər` : (room.people > 0 ? `Dayanıb (${room.people} nəfər)` : "Boşdur");
         
         div.innerHTML = `
             <div class="room-icon">${r.icon}</div>
