@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmoniya Antikafe</title>
+
+<style>
+:root {
+    --bg-main: #130f1c;
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-color: #f5d28a;
+    --text-main: #ffffff;
+    --text-muted: #b8b2c7;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-main);
+    background-image: radial-gradient(circle at top, #241838 0%, #130f1c 70%);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+header {
+    text-align: center;
+    padding: 35px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-color);
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0 15px;
+}
+
+h2 {
+    color: var(--accent-color);
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+/* Otaqlar Grid */
+.rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.room {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 18px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.room:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(245, 210, 138, 0.4);
+}
+
+.room.active {
+    background: rgba(245, 210, 138, 0.15);
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(245, 210, 138, 0.15);
+}
+
+.room-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.room-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* İdarəetmə Paneli */
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+}
+
+.status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--success);
+}
+
+.timer-box {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.timer {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--accent-color);
+    letter-spacing: 2px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+button {
+    flex: 1;
+    border: 0;
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.start {
+    background: var(--success);
+    color: white;
+}
+
+.stop {
+    background: var(--danger);
+    color: white;
+}
+
+.info {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 15px;
+    line-height: 1.6;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    border-radius: 10px;
+}
+
+/* Yemək menyusu */
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.food {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    padding: 14px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.food strong {
+    font-size: 14px;
+}
+
+.food .price {
+    color: var(--accent-color);
+    font-size: 13px;
+    margin: 6px 0 10px;
+    font-weight: 600;
+}
+
+.food button {
+    background: var(--accent-color);
+    color: #1a1528;
+    padding: 8px;
+    font-size: 13px;
+    width: 100%;
+}
+
+/* Sifarişlər */
+.order-list {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+}
+
+.order {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.order:last-child {
+    border-bottom: none;
+}
+
+.remove-btn {
+    background: var(--danger);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    flex: unset;
+}
+
+.total-box {
+    background: rgba(245, 210, 138, 0.08);
+    border: 1px solid rgba(245, 210, 138, 0.2);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 25px;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">✦ HARMONİYA ANTİKAFE ✦</div>
+    <div class="subtitle">Your time • Your room • Your harmony</div>
+</header>
+
+<div class="container">
+
+    <h2>Otağınızı seçin</h2>
+    <div class="rooms" id="rooms"></div>
+
+    <div class="panel hidden" id="controlPanel">
+        
+        <div class="panel-header">
+            <h2 id="selectedRoom" style="margin:0;">Otaq</h2>
+            <div class="status" id="status">Gözləmədə</div>
+        </div>
+
+        <div class="timer-box">
+            <div class="timer" id="timer">00:00:00</div>
+            <div class="action-buttons">
+                <button class="start" onclick="startTimer()">▶ Vaxtı Başlat</button>
+                <button class="stop" onclick="finishRoom()">■ Hesabı Bağla</button>
+            </div>
+        </div>
+
+        <div class="info">
+            İlk 1 saat: <b>4 AZN</b> • Sonrakı saatlər: <b>+3 AZN</b><br>
+            Hər saatın sonunda <b>15 dəqiqə güzəşt</b>
+        </div>
+
+        <hr style="border-color:var(--border-color);margin:25px 0">
+
+        <!-- SİFARİŞ VƏ HESAB YUXARI KÖÇÜRÜLDÜ -->
+        <h2>🧾 Sifariş Səbəti</h2>
+        <div class="order-list" id="orderList">
+            <div style="color:var(--text-muted);text-align:center;padding:10px;">Sifariş yoxdur</div>
+        </div>
+
+        <div class="total-box">
+            <span>Yekun Məbləğ:</span>
+            <span><span id="totalPrice">0.00</span> AZN</span>
+        </div>
+
+        <hr style="border-color:var(--border-color);margin:25px 0">
+
+        <h2>🍔 Yemək və İçkilər</h2>
+        <div class="food-grid" id="foodGrid"></div>
+
+    </div>
+
+</div>
+
+<script>
+const rooms = [
+    {name:"Game Room", icon:"🎮"},
+    {name:"Cinema Room", icon:"🎬"},
+    {name:"Karaoke Room", icon:"🎤"},
+    {name:"Secret Room", icon:"🔐"},
+    {name:"Fresh Room", icon:"🥤"},
+    {name:"VIP Room", icon:"👑"},
+    {name:"Party Room", icon:"🎉"},
+    {name:"Balcoon Room", icon:"🌿"}
+];
+
+const foods = [
+    {name:"Çay", price:2},
+    {name:"Qəhvə", price:3},
+    {name:"Limonad", price:4},
+    {name:"Pizza", price:8},
+    {name:"Burger", price:7},
+    {name:"Kartof fri", price:4},
+    {name:"Club Sandwich", price:8},
+    {name:"Desert", price:5}
+];
+
+let selectedRoom = null;
+let startTime = null;
+let timerInterval = null;
+let order = [];
+
+function renderRooms(){
+    let html = "";
+    rooms.forEach((room,index)=>{
+        html += `
+            <div class="room" id="room-${index}" onclick="selectRoom(${index})">
+                <div class="room-icon">${room.icon}</div>
+                <div class="room-name">${room.name}</div>
+            </div>
+        `;
+    });
+    document.getElementById("rooms").innerHTML = html;
+}
+
+function selectRoom(index){
+    selectedRoom = rooms[index];
+    document.querySelectorAll(".room").forEach(x => x.classList.remove("active"));
+    document.getElementById("room-"+index).classList.add("active");
+
+    document.getElementById("controlPanel").classList.remove("hidden");
+    document.getElementById("selectedRoom").innerText = selectedRoom.icon + " " + selectedRoom.name;
+}
+
+function renderFoods(){
+    let html = "";
+    foods.forEach((food,index)=>{
+        html += `
+            <div class="food">
+                <div>
+                    <strong>${food.name}</strong>
+                    <div class="price">${food.price.toFixed(2)} AZN</div>
+                </div>
+                <button onclick="addFood(${index})">+ Sifariş</button>
+            </div>
+        `;
+    });
+    document.getElementById("foodGrid").innerHTML = html;
+}
+
+function startTimer(){
+    if(!selectedRoom){ alert("Əvvəlcə otaq seçin."); return; }
+    if(startTime){ alert("Vaxt artıq başlayıb."); return; }
+
+    startTime = Date.now();
+    document.getElementById("status").innerText = "Aktivdir 🟢";
+    timerInterval = setInterval(updateTimer,1000);
+    updateTimer();
+}
+
+function calculateRoomPrice(){
+    if(!startTime) return 0;
+    const elapsed = Date.now() - startTime;
+    const hour = 60 * 60 * 1000;
+    const grace = 15 * 60 * 1000;
+
+    if(elapsed <= hour + grace) return 4;
+    const extraHours = Math.ceil((elapsed - hour - grace) / hour);
+    return 4 + extraHours * 3;
+}
+
+function updateTimer(){
+    if(!startTime) return;
+    const elapsed = Date.now() - startTime;
+    let seconds = Math.floor(elapsed / 1000);
+    let hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    let minutes = Math.floor(seconds / 60);
+    seconds %= 60;
+
+    document.getElementById("timer").innerText =
+        String(hours).padStart(2,"0") + ":" +
+        String(minutes).padStart(2,"0") + ":" +
+        String(seconds).padStart(2,"0");
+
+    updateTotal();
+}
+
+function addFood(index){
+    order.push(foods[index]);
+    renderOrder();
+    updateTotal();
+}
+
+function renderOrder(){
+    const box = document.getElementById("orderList");
+    if(order.length === 0){
+        box.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:10px;">Sifariş yoxdur</div>';
+        return;
+    }
+
+    let html = "";
+    order.forEach((item,index)=>{
+        html += `
+            <div class="order">
+                <span>${item.name} — <b>${item.price.toFixed(2)} AZN</b></span>
+                <button class="remove-btn" onclick="removeFood(${index})">Sil</button>
+            </div>
+        `;
+    });
+    box.innerHTML = html;
+}
+
+function removeFood(index){
+    order.splice(index,1);
+    renderOrder();
+    updateTotal();
+}
+
+function calculateFoodPrice(){
+    return order.reduce((total,item)=>total + item.price, 0);
+}
+
+function updateTotal(){
+    const roomPrice = calculateRoomPrice();
+    const foodPrice = calculateFoodPrice();
+    document.getElementById("totalPrice").innerText = (roomPrice + foodPrice).toFixed(2);
+}
+
+function finishRoom(){
+    if(!startTime){ alert("Vaxt hələ başlamayıb."); return; }
+
+    updateTotal();
+    const roomPrice = calculateRoomPrice();
+    const foodPrice = calculateFoodPrice();
+    const total = roomPrice + foodPrice;
+
+    clearInterval(timerInterval);
+
+    alert(
+        "✦ HARMONİYA ANTİKAFE ✦\n\n" +
+        selectedRoom.name + "\n\n" +
+        "Otaq vaxtı: " + roomPrice.toFixed(2) + " AZN\n" +
+        "Yeməklər: " + foodPrice.toFixed(2) + " AZN\n" +
+        "----------------------\n" +
+        "YEKUN: " + total.toFixed(2) + " AZN"
+    );
+
+    startTime = null;
+    timerInterval = null;
+    order = [];
+
+    document.getElementById("timer").innerText = "00:00:00";
+    document.getElementById("status").innerText = "Gözləmədə";
+    renderOrder();
+    updateTotal();
+}
+
+renderRooms();
+renderFoods();
+</script>
+
+</body>
+</html>
