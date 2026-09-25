@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmoniya Antikafe</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#17121f,#30203f);
+    color:white;
+}
+
+header{
+    text-align:center;
+    padding:30px 15px;
+    background:rgba(0,0,0,.25);
+}
+
+.logo{
+    font-size:34px;
+    font-weight:bold;
+    color:#f5d28a;
+}
+
+.subtitle{
+    color:#d8cce5;
+    margin-top:8px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px 15px;
+}
+
+h2{
+    color:#f5d28a;
+}
+
+.rooms{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:15px;
+}
+
+.room{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:18px;
+    padding:22px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.room:hover{
+    transform:translateY(-4px);
+    background:rgba(255,255,255,.14);
+}
+
+.room.active{
+    border:2px solid #f5d28a;
+    box-shadow:0 0 20px rgba(245,210,138,.2);
+}
+
+.room-icon{
+    font-size:40px;
+}
+
+.room-name{
+    margin-top:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.panel{
+    margin-top:25px;
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:25px;
+}
+
+.timer{
+    text-align:center;
+    font-size:45px;
+    font-weight:bold;
+    color:#f5d28a;
+    margin:15px 0;
+}
+
+.status{
+    text-align:center;
+    color:#bde7bd;
+}
+
+button{
+    border:0;
+    border-radius:12px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.start{
+    background:#49b675;
+    color:white;
+}
+
+.stop{
+    background:#d9534f;
+    color:white;
+}
+
+.food-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+}
+
+.food{
+    background:#21192c;
+    padding:15px;
+    border-radius:14px;
+}
+
+.food button{
+    background:#f5d28a;
+    color:#241b29;
+    width:100%;
+    margin-top:10px;
+}
+
+.order{
+    border-bottom:1px solid rgba(255,255,255,.1);
+    padding:10px 0;
+}
+
+.total{
+    font-size:25px;
+    color:#f5d28a;
+    text-align:right;
+    margin-top:20px;
+}
+
+.hidden{
+    display:none;
+}
+
+.info{
+    text-align:center;
+    color:#ccc;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">✦ HARMONİYA ANTİKAFE ✦</div>
+    <div class="subtitle">Your time • Your room • Your harmony</div>
+</header>
+
+<div class="container">
+
+    <h2>Otağınızı seçin</h2>
+
+    <div class="rooms" id="rooms"></div>
+
+    <div class="panel hidden" id="controlPanel">
+
+        <h2 id="selectedRoom">Otaq</h2>
+
+        <div class="status" id="status">
+            Vaxt hələ başlamayıb
+        </div>
+
+        <div class="timer" id="timer">
+            00:00:00
+        </div>
+
+        <div style="text-align:center">
+            <button class="start" onclick="startTimer()">
+                ▶ Vaxtı başlat
+            </button>
+
+            <button class="stop" onclick="finishRoom()">
+                ■ Hesabı bağla
+            </button>
+        </div>
+
+        <p class="info">
+            İlk 1 saat: <b>4 AZN</b><br>
+            Sonrakı saatlər: <b>+3 AZN</b><br>
+            Hər saatın sonunda <b>15 dəqiqə güzəşt</b>
+        </p>
+
+        <hr style="border-color:#ffffff18;margin:25px 0">
+
+        <h2>🍔 Yemək və içkilər</h2>
+
+        <div class="food-grid" id="foodGrid"></div>
+
+        <h2>🧾 Sifariş</h2>
+
+        <div id="orderList">
+            Sifariş yoxdur.
+        </div>
+
+        <div class="total">
+            Otaq: <span id="roomPrice">0.00</span> AZN<br>
+            Yemək: <span id="foodPrice">0.00</span> AZN<br>
+            Ümumi: <span id="totalPrice">0.00</span> AZN
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const rooms = [
+    {name:"Game Room", icon:"🎮"},
+    {name:"Cinema Room", icon:"🎬"},
+    {name:"Karaoke Room", icon:"🎤"},
+    {name:"Secret Room", icon:"🔐"},
+    {name:"Fresh Room", icon:"🥤"},
+    {name:"VIP Room", icon:"👑"},
+    {name:"Party Room", icon:"🎉"},
+    {name:"Balcoon Room", icon:"🌿"}
+];
+
+const foods = [
+    {name:"Çay", price:2},
+    {name:"Qəhvə", price:3},
+    {name:"Limonad", price:4},
+    {name:"Pizza", price:8},
+    {name:"Burger", price:7},
+    {name:"Kartof fri", price:4},
+    {name:"Club Sandwich", price:8},
+    {name:"Desert", price:5}
+];
+
+let selectedRoom = null;
+let startTime = null;
+let timerInterval = null;
+let order = [];
+
+
+/* Otaqları yarat */
+
+function renderRooms(){
+
+    let html = "";
+
+    rooms.forEach((room,index)=>{
+
+        html += `
+            <div class="room"
+                 id="room-${index}"
+                 onclick="selectRoom(${index})">
+
+                <div class="room-icon">${room.icon}</div>
+                <div class="room-name">${room.name}</div>
+
+            </div>
+        `;
+    });
+
+    document.getElementById("rooms").innerHTML = html;
+}
+
+
+/* Otaq seç */
+
+function selectRoom(index){
+
+    selectedRoom = rooms[index];
+
+    document.querySelectorAll(".room")
+        .forEach(x => x.classList.remove("active"));
+
+    document.getElementById("room-"+index)
+        .classList.add("active");
+
+    document.getElementById("controlPanel")
+        .classList.remove("hidden");
+
+    document.getElementById("selectedRoom")
+        .innerText = selectedRoom.icon + " " + selectedRoom.name;
+
+}
+
+
+/* Yeməkləri göstər */
+
+function renderFoods(){
+
+    let html = "";
+
+    foods.forEach((food,index)=>{
+
+        html += `
+            <div class="food">
+
+                <strong>${food.name}</strong>
+
+                <div style="margin-top:6px">
+                    ${food.price.toFixed(2)} AZN
+                </div>
+
+                <button onclick="addFood(${index})">
+                    + Sifariş et
+                </button>
+
+            </div>
+        `;
+    });
+
+    document.getElementById("foodGrid").innerHTML = html;
+}
+
+
+/* Vaxtı başlat */
+
+function startTimer(){
+
+    if(!selectedRoom){
+
+        alert("Əvvəlcə otaq seçin.");
+
+        return;
+    }
+
+    if(startTime){
+
+        alert("Vaxt artıq başlayıb.");
+
+        return;
+    }
+
+    startTime = Date.now();
+
+    document.getElementById("status")
+        .innerText = "🟢 Vaxt aktivdir";
+
+    timerInterval = setInterval(updateTimer,1000);
+
+    updateTimer();
+}
+
+
+/* Vaxt hesabı */
+
+function calculateRoomPrice(){
+
+    if(!startTime) return 0;
+
+    const elapsed = Date.now() - startTime;
+
+    const hour = 60 * 60 * 1000;
+    const grace = 15 * 60 * 1000;
+
+    /*
+       0 - 1 saat 15 dəqiqə = 4 AZN
+
+       1 saat 15 dəqiqədən sonra = 7 AZN
+
+       2 saat 15 dəqiqədən sonra = 10 AZN
+
+       və s.
+    */
+
+    if(elapsed <= hour + grace){
+
+        return 4;
+    }
+
+    const extraHours =
+        Math.ceil((elapsed - hour - grace) / hour);
+
+    return 4 + extraHours * 3;
+}
+
+
+/* Timer */
+
+function updateTimer(){
+
+    if(!startTime) return;
+
+    const elapsed = Date.now() - startTime;
+
+    let seconds = Math.floor(elapsed / 1000);
+
+    let hours = Math.floor(seconds / 3600);
+
+    seconds %= 3600;
+
+    let minutes = Math.floor(seconds / 60);
+
+    seconds %= 60;
+
+    document.getElementById("timer")
+        .innerText =
+        String(hours).padStart(2,"0") + ":" +
+        String(minutes).padStart(2,"0") + ":" +
+        String(seconds).padStart(2,"0");
+
+    updateTotal();
+}
+
+
+/* Yemək əlavə et */
+
+function addFood(index){
+
+    const food = foods[index];
+
+    order.push(food);
+
+    renderOrder();
+
+    updateTotal();
+}
+
+
+/* Sifarişi göstər */
+
+function renderOrder(){
+
+    const box = document.getElementById("orderList");
+
+    if(order.length === 0){
+
+        box.innerHTML = "Sifariş yoxdur.";
+
+        return;
+    }
+
+    let html = "";
+
+    order.forEach((item,index)=>{
+
+        html += `
+            <div class="order">
+
+                ${item.name}
+                —
+                ${item.price.toFixed(2)} AZN
+
+                <button
+                    onclick="removeFood(${index})"
+                    style="float:right;background:#d9534f;color:white;padding:5px 9px">
+
+                    ✕
+
+                </button>
+
+            </div>
+        `;
+    });
+
+    box.innerHTML = html;
+}
+
+
+/* Yeməyi sil */
+
+function removeFood(index){
+
+    order.splice(index,1);
+
+    renderOrder();
+
+    updateTotal();
+}
+
+
+/* Yemək toplamı */
+
+function calculateFoodPrice(){
+
+    return order.reduce(
+        (total,item)=>total + item.price,
+        0
+    );
+}
+
+
+/* Ümumi hesab */
+
+function updateTotal(){
+
+    const roomPrice = calculateRoomPrice();
+
+    const foodPrice = calculateFoodPrice();
+
+    document.getElementById("roomPrice")
+        .innerText = roomPrice.toFixed(2);
+
+    document.getElementById("foodPrice")
+        .innerText = foodPrice.toFixed(2);
+
+    document.getElementById("totalPrice")
+        .innerText = (roomPrice + foodPrice).toFixed(2);
+}
+
+
+/* Hesabı bağla */
+
+function finishRoom(){
+
+    if(!startTime){
+
+        alert("Vaxt hələ başlamayıb.");
+
+        return;
+    }
+
+    updateTotal();
+
+    const roomPrice = calculateRoomPrice();
+    const foodPrice = calculateFoodPrice();
+    const total = roomPrice + foodPrice;
+
+    clearInterval(timerInterval);
+
+    alert(
+        "Harmoniya Antikafe\n\n" +
+        selectedRoom.name + "\n\n" +
+        "Otaq: " + roomPrice.toFixed(2) + " AZN\n" +
+        "Yemək: " + foodPrice.toFixed(2) + " AZN\n" +
+        "----------------------\n" +
+        "YEKUN: " + total.toFixed(2) + " AZN"
+    );
+
+    startTime = null;
+    timerInterval = null;
+    order = [];
+
+    document.getElementById("timer")
+        .innerText = "00:00:00";
+
+    document.getElementById("status")
+        .innerText = "Vaxt bitdi";
+
+    renderOrder();
+    updateTotal();
+}
+
+
+/* Başlanğıc */
+
+renderRooms();
+renderFoods();
+
+</script>
+
+</body>
+</html>
