@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmoniya Antikafe</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#17121f,#30203f);
+    color:white;
+}
+
+header{
+    text-align:center;
+    padding:30px 15px;
+    background:rgba(0,0,0,.25);
+}
+
+.logo{
+    font-size:34px;
+    font-weight:bold;
+    color:#f5d28a;
+}
+
+.subtitle{
+    color:#d8cce5;
+    margin-top:8px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px 15px;
+}
+
+h2{
+    color:#f5d28a;
+}
+
+.rooms{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:15px;
+}
+
+.room{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:18px;
+    padding:22px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.room:hover{
+    transform:translateY(-4px);
+    background:rgba(255,255,255,.14);
+}
+
+.room.active{
+    border:2px solid #f5d28a;
+    box-shadow:0 0 20px rgba(245,210,138,.2);
+}
+
+.room-icon{
+    font-size:40px;
+}
+
+.room-name{
+    margin-top:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.room-badge{
+    margin-top:8px;
+    font-size:13px;
+    color:#bde7bd;
+}
+
+.panel{
+    margin-top:25px;
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:25px;
+}
+
+.timer{
+    text-align:center;
+    font-size:45px;
+    font-weight:bold;
+    color:#f5d28a;
+    margin:15px 0;
+}
+
+.status{
+    text-align:center;
+    color:#bde7bd;
+}
+
+button{
+    border:0;
+    border-radius:12px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.start{
+    background:#49b675;
+    color:white;
+}
+
+.stop{
+    background:#d9534f;
+    color:white;
+}
+
+.food-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+}
+
+.food{
+    background:#21192c;
+    padding:15px;
+    border-radius:14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.food img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #111;
+}
+
+.food button{
+    background:#f5d28a;
+    color:#241b29;
+    width:100%;
+    margin-top:10px;
+    padding: 8px;
+    font-size: 13px;
+}
+
+.order{
+    border-bottom:1px solid rgba(255,255,255,.1);
+    padding:10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total{
+    font-size:22px;
+    color:#f5d28a;
+    text-align:right;
+    margin-top:20px;
+}
+
+.hidden{
+    display:none;
+}
+
+.info{
+    text-align:center;
+    color:#ccc;
+    margin-top:10px;
+    line-height: 1.6;
+}
+
+.category-title {
+    margin: 30px 0 15px 0;
+    color: #f5d28a;
+    font-size: 22px;
+    border-bottom: 2px solid rgba(245,210,138,0.3);
+    padding-bottom: 8px;
+    grid-column: 1 / -1;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">✦ HARMONİYA ANTİKAFE ✦</div>
+    <div class="subtitle">Your time • Your room • Your harmony</div>
+</header>
+
+<div class="container">
+
+    <h2>Otağınızı seçin</h2>
+
+    <div class="rooms" id="rooms"></div>
+
+    <div class="panel hidden" id="controlPanel">
+
+        <h2 id="selectedRoom">Otaq</h2>
+        <div id="roomPeopleInfo" style="text-align:center; color:#f5d28a; margin-bottom:10px;"></div>
+
+        <div class="status" id="status">
+            Vaxt hələ başlamayıb
+        </div>
+
+        <div class="timer" id="timer">
+            00:00:00
+        </div>
+
+        <div style="text-align:center">
+            <button class="start" onclick="startTimer()">
+                ▶ Vaxtı başlat
+            </button>
+
+            <button class="stop" onclick="finishRoom()">
+                ■ Hesabı bağla
+            </button>
+        </div>
+
+        <p class="info">
+            <b>Hesablama qaydası:</b><br>
+            1-ci saat: Adam sayı × 4 AZN<br>
+            Növbəti hər saat: Adam sayı × 3 AZN<br>
+            Hər saat bitdikdən sonra <b>15 dəqiqə güzəşt</b> verilir (16-cı dəqiqədən növbəti saat yazılır).
+        </p>
+
+        <hr style="border-color:#ffffff18;margin:25px 0">
+
+        <h2>🍔 Yemək və içkilər</h2>
+
+        <div id="foodGrid" class="food-grid"></div>
+
+        <h2>🧾 Sifariş</h2>
+
+        <div id="orderList">
+            Sifariş yoxdur.
+        </div>
+
+        <div class="total">
+            Otaq: <span id="roomPrice">0.00</span> AZN<br>
+            Yemək: <span id="foodPrice">0.00</span> AZN<br>
+            Ümumi: <span id="totalPrice">0.00</span> AZN
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+const roomsData = [
+    {name:"Game Room", icon:"🎮"},
+    {name:"Cinema Room", icon:"🎬"},
+    {name:"Karaoke Room", icon:"🎤"},
+    {name:"Secret Room", icon:"🔐"},
+    {name:"Fresh Room", icon:"🥤"},
+    {name:"VIP Room", icon:"👑"},
+    {name:"Party Room", icon:"🎉"},
+    {name:"Balcoon Room", icon:"🌿"}
+];
+
+// Hər otağın öz məlumatlarını yadda saxlamaq üçün obyekt
+let rooms = {};
+roomsData.forEach(r => {
+    rooms[r.name] = {
+        name: r.name,
+        icon: r.icon,
+        timer: 0,
+        interval: null,
+        isRunning: false,
+        people: 0,
+        items: []
+    };
+});
+
+let currentRoomName = null;
+
+function renderRooms() {
+    const container = document.getElementById("rooms");
+    container.innerHTML = "";
+    
+    roomsData.forEach(r => {
+        let room = rooms[r.name];
+        let div = document.createElement("div");
+        div.className = "room" + (currentRoomName === r.name ? " active" : "");
+        div.onclick = () => selectRoom(r.name);
+        
+        let badgeText = room.isRunning ? `Aktiv: ${room.people} nəfər` : (room.people > 0 ? `Dayanıb (${room.people} nəfər)` : "Boşdur");
+        
+        div.innerHTML = `
+            <div class="room-icon">${r.icon}</div>
+            <div class="room-name">${r.name}</div>
+            <div class="room-badge">${badgeText}</div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function selectRoom(name) {
+    currentRoomName = name;
+    let room = rooms[name];
+
+    if (room.people === 0 && !room.isRunning) {
+        let pCount = prompt(name + " üçün adam sayını daxil edin:", "4");
+        if (pCount === null ||isNaN(pCount) || parseInt(pCount) <= 0) {
+            currentRoomName = null;
+            return;
+        }
+        room.people = parseInt(pCount);
+    }
+
+    document.getElementById("controlPanel").classList.remove("hidden");
+    document.getElementById("selectedRoominnerText") = name;
+    document.getElementById("selectedRoom").innerHTML = `${room.icon} ${name}`;
+    document.getElementById("roomPeopleInfo").innerText = `Otaqdakı adam sayı: ${room.people} nəfər`;
+    
+    updateDisplay();
+    renderRooms();
+}
+
+function startTimer() {
+    let room = rooms[currentRoomName];
+    if (!room.isRunning) {
+        room.isRunning = true;
+        room.interval = setInterval(() => {
+            room.timer++;
+            updateDisplay();
+        }, 1000);
+    }
+    document.getElementById("status").innerText = "Vaxt gedir...";
+    renderRooms();
+}
+
+function calculateRoomPrice(seconds, people) {
+    if (seconds <= 0) return 0;
+    
+    // 1 saat = 3600 saniyə. 15 dəqiqə güzəşt = 900 saniyə.
+    // Deməli, hər saatdan sonra 15 dəqiqə (900 san) ərzində əlavə ödəniş gəlmir.
+    // 16-cı dəqiqədən (yəni saat + 901-ci saniyədən) etibarən növbəti saat hesablanır.
+    
+    let totalMinutes = seconds / 60;
+    let hours = 0;
+
+    if (totalMinutes <= 60) {
+        hours = 1;
+    } else {
+        let extraMinutes = totalMinutes - 60;
+        // Hər 60 dəqiqəlik dövr + 15 dəqiqəlik güzəşt (cəmi 75 dəqiqəlik intervallar)
+        let extraHours = Math.floor(extraMinutes / 75);
+        let remainder = extraMinutes % 75;
+        
+        hours = 1 + extraHours;
+        if (remainder > 15) {
+            hours += 1;
+        }
+    }
+
+    // Qiymət: 1-ci saat adam başı 4 AZN, sonrakı hər saat adam başı 3 AZN
+    let price = (people * 4) + ((hours - 1) * people * 3);
+    return price < 0 ? 0 : price;
+}
+
+function updateDisplay() {
+    if (!currentRoomName) return;
+    let room = rooms[currentRoomName];
+
+    let hrs = String(Math.floor(room.timer / 3600)).padStart(2, '0');
+    let mins = String(Math.floor((room.timer % 3600) / 60)).padStart(2, '0');
+    let secs = String(room.timer % 60).padStart(2, '0');
+    document.getElementById("timer").innerText = `${hrs}:${mins}:${secs}`;
+
+    let roomCost = calculateRoomPrice(room.timer, room.people);
+    document.getElementById("roomPrice").innerText = roomCost.toFixed(2);
+
+    let foodCost = room.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    document.getElementById("foodPrice").innerText = foodCost.toFixed(2);
+
+    document.getElementById("totalPrice").innerText = (roomCost + foodCost).toFixed(2);
+
+    // Sifarişləri yenilə
+    let orderListDiv = document.getElementById("orderList");
+    if (room.items.length === 0) {
+        orderListDiv.innerHTML = "Sifariş yoxdur.";
+    } else {
+        orderListDiv.innerHTML = "";
+        room.items.forEach((item, index) => {
+            orderListDiv.innerHTML += `
+                <div class="order">
+                    <span>${item.name} (${item.qty} ədəd)</span>
+                    <span><b>${(item.price * item.qty).toFixed(2)} AZN</b> <button style="background:#d9534f; color:white; padding:4px 8px; margin-left:10px;" onclick="removeItem(${index})">Sil</button></span>
+                </div>
+            `;
+        });
+    }
+}
+
+function finishRoom() {
+    let room = rooms[currentRoomName];
+    if (room.interval) clearInterval(room.interval);
+    
+    let roomCost = calculateRoomPrice(room.timer, room.people);
+    let foodCost = room.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    let total = roomCost + foodCost;
+
+    alert(`Otaq bağlandı: ${currentRoomName}\nÜmumi məbləğ: ${total.toFixed(2)} AZN`);
+
+    room.timer = 0;
+    room.isRunning = false;
+    room.people = 0;
+    room.items = [];
+    if (room.interval) clearInterval(room.interval);
+
+    document.getElementById("controlPanel").classList.add("hidden");
+    currentRoomName = null;
+    renderRooms();
+}
+
+// Menyu elementlərini ekrana yığmaq
+const menu = {
+  "Səhər yeməkləri": [
+    { name: "Səhər Yeməyi Seti", price: 10.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0XBIYXqKhyXSOmKZOPahzqYMadCigo9UEpKyKMkx6MA&s=10" },
+    { name: "Qlazok", price: 2.50, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400" },
+    { name: "Qayğanaq", price: 2.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-zC5lESt_7nxq_lJLIOGU6u533efaiPUs6sZHcnHFEA&s=10" },
+    { name: "Pomidor yumurta", price: 3.50, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPqAJnNdtA-qbDEzg1tAAYGzf7Ssqd8OJlV4YbUk5yw&s=10" }
+  ],
+  "Sərin içkilər": [
+    { name: "Cola / Fanta 0.5L", price: 1.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvCQpUqyQtSfBXgtO0iYtpqx3L6mm3UbVWOhPDsiR_pQ&s=10" },
+    { name: "Ayran", price: 0.80, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSfbty5xvznIviajLIyAJcbG9nOR_72msZofGkIxUu7g&s=10" }
+  ]
+};
+
+function renderMenu() {
+    const foodGrid = document.getElementById("foodGrid");
+    foodGrid.innerHTML = "";
+
+    for (let category in menu) {
+        let catTitle = document.createElement("div");
+        catTitle.className = "category-title";
+        catTitle.innerText = category;
+        foodGrid.appendChild(catTitle);
+
+        menu[category].forEach(item => {
+            let foodDiv = document.createElement("div");
+            foodDiv.className = "food";
+            foodDiv.innerHTML = `
+                <div>
+                    <img src="${item.image}" alt="">
+                    <div style="font-weight:bold; font-size:14px;">${item.name}</div>
+                    <div style="color:#f5d28a; margin-top:5px;">${item.price.toFixed(2)} AZN</div>
+                </div>
+                <button onclick="addFood('${item.name}', ${item.price})">+ Sifarişə əlavə et</button>
+            `;
+            foodGrid.appendChild(foodDiv);
+        });
+    }
+}
+
+function addFood(name, price) {
+    if (!currentRoomName) {
+        alert("Əvvəlcə otaq seçin!");
+        return;
+    }
+    let room = rooms[currentRoomName];
+    let existing = room.items.find(i => i.name === name);
+    if (existing) {
+        existing.qty++;
+    } else {
+        room.items.push({ name, price, qty: 1 });
+    }
+    updateDisplay();
+}
+
+function removeItem(index) {
+    if (!currentRoomName) return;
+    let room = rooms[currentRoomName];
+    room.items.splice(index, 1);
+    updateDisplay();
+}
+
+renderRooms();
+renderMenu();
+</script>
+
+</body>
+</html>
